@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+    <title>Document</title>
+</head>
+<body>
+    <div class="main min-h-screen w-full bg-zinc-900">
+        <div class="form">
+            <form action="/create" method="post" class="p-10 text-white">
+                <input class="block px-5 w-full rounded-lg outline-none py-2 bg-zinc-800" type="text" placeholder="Title goes here.." name="title">
+                <textarea class="block resize-none mt-2 rounded-lg w-full outline-none px-5 py-2 bg-zinc-800" placeholder="write your task details here.." name="details"></textarea>
+                <input class="mt-2 bg-blue-600 px-5 py-2 rounded-md cursor-pointer hover:bg-blue-800" type="submit" value="Create Task">
+            </form>
+        </div>
+
+        <div class="task p-10 flex gap-5 flex-wrap">
+            <% if(files.length > 0){ %>
+                <% files.forEach(function(val){ %>
+                    <div class="task w-72 px-3 py-4 rounded-md bg-zinc-800">
+                        <h1 class="text-white  text-3xl tracking-tighter">
+                            <%= val %>
+                        </h1>
+                        <div class="mt-3 justify-between flex items-center">
+                            <a class="text-blue-500" href="/files/<%= val %>">Read More..</a>
+                        <a class="text-gray-500" href="/edit/<%= val%>">edit filename</a>
+                        </div>
+                        
+                    </div>
+                <% }) %>
+           <% } else { %>
+            <h3 class="text-green-400">no task yet!</h3>
+           <% }%>
+            
+            
+           
+        </div>
+    </div>
+</body>
+</html>
