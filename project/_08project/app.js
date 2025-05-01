@@ -65,11 +65,46 @@ app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
+app.get("/like/:id", isLoggedIn, async (req, res) => {
+  let post = await postModel.findOne({_id : req.params.id}).populate("user")
+
+  if(post.likes.indexOf(req.user.userid) === -1){
+    post.likes.push(req.user.userid);
+  }
+  else{
+    post.likes.splice(post.likes.indexOf(req.user.userid), 1); //splice method removes the element from the array => find index of that user and than remove '1' element from that index
+    }
+  await post.save();
+  res.redirect("/profile");
+});
+
+app.get("/edit/:id", isLoggedIn, async (req, res) => {
+  let post = await postModel.findOne({_id : req.params.id}).populate("user")
+
+  
+  res.render("edit", {post});
+});
+
+app.post("/update/:id", isLoggedIn, async (req, res) => {
+  let post = await postModel.findOne({_id : req.params.id}).populate("user")
+
+  let {content} = req.body;
+  let updated = await postModel.findOneAndUpdate({content : post.content}, {content : content}, {new : true});
+  res.redirect("/profile")
+  
+});
+
+app.get('/read', async (req, res) => {
+  let posts = await postModel.find().populate("user")
+  res.render('allposts' ,{posts})
+  
+})
+
 app.get("/profile", isLoggedIn, async (req, res) => {
   let user = await userModel.findOne({email : req.user.email}).populate("posts")
-  console.log(user)
+  
    //populate("posts") => becouse the posts in user collection are just the ids of the posts so for the data we need to populate it with the post collection
-  console.log(user.posts)
+  
   res.render("profile", {user});
 });
 
@@ -87,6 +122,9 @@ app.post("/post", isLoggedIn, async (req, res) => {
  
   res.redirect("/profile")
 });
+
+
+
 
 // miiddleware to check if user is logged in for protected routes
 function isLoggedIn(req, res, next) {
