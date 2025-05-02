@@ -11,12 +11,20 @@ app.use(express.json())
 app.use(express.urlencoded({extended : true}))
 
 
+
+
+
+
+// user for multer
 const storage = multer.diskStorage({
+      // where the file store
     destination: function (req, file, cb) {
       cb(null, './public/images/uploads')
     },
+     // helps to give unique value to the file name
     filename: function (req, file, cb) {
         crypto.randomBytes(12, (err, bytes)=>{
+            // use to find the name of file and add extention in that
             const fs = bytes.toString("hex") + path.extname(file.originalname)
             cb(null, fs)          
     })

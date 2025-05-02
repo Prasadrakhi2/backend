@@ -4,50 +4,25 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const userModel = require("./models/user");
 const postModel = require("./models/post");
-const crypto = require("crypto");
-const multer = require('multer')
 const path = require("path");
+const upload = require('./configs/multerconfig')
 
 const app = express();
 
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')))
 app.use(cookieParser());
 
 
-// user for multer
-const storage = multer.diskStorage({
-  // where the file store
-  destination: function (req, file, cb) {
-    cb(null, './public/images/uploads')
-  },
-  // helps to give unique value to the file name
-  filename: function (req, file, cb) {
-    crypto.randomBytes(12, function (err, bytes){
-      // use to find the name of file and add extention in that
-      const fn =  bytes.toString("hex") + path.extname(file.originalname)
-      cb(null, fn)
-     })
-    
-  }
-})
-const upload = multer({ storage: storage })
 
 
 app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.get('/text' , (req, res)=>{
-  res.render('text')
-  
-})
 
-app.post('/text', upload.single('image'), (req, res)=>{
-  res.render('text')
-  console.log(req.file)
-})
 
 app.post("/register", async (req, res) => {
   let { username, name, email, password, age } = req.body;
@@ -77,6 +52,8 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 
+
+
 app.post("/login", async (req, res) => {
   let { email, password } = req.body;
   let user = await userModel.findOne({ email });
@@ -96,6 +73,18 @@ app.post("/login", async (req, res) => {
 app.get("/logout", (req, res) => {
   res.cookie("token", "");
   res.redirect("/login");
+});
+
+app.get("/profile/upload", (req, res) => { 
+  res.render("profileupload");
+});
+
+app.post("/upload",isLoggedIn , upload.single("image"),async (req, res) => { 
+  console.log(req.file)
+  let user = await userModel.findOne({email : req.user.email})
+  user.profilepic = req.file.filename
+  await user.save()
+  res.redirect('/profile')
 });
 
 app.get("/like/:id", isLoggedIn, async (req, res) => {

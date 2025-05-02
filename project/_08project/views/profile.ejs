@@ -16,9 +16,15 @@
         >
       </div>
 
-      <h1 class="text-3xl font-bold mt-5 mb-2">
-        <span class="font-base text-green-400"> Hello</span> <%= user.name %> 👋
-      </h1>
+      <div class="flex item-start mt-5 mb-2  gap-3">
+        <div class="w-10 h-10  rounded-md overflow-hidden">
+          <img class="h-full w-full object-cover" src="/images/uploads/<%=user.profilepic %>" alt="">
+        </div>
+        <h1 class="text-3xl font-bold ">
+          <span class="font-base text-green-400"> Hello</span> <%= user.name %> 👋
+        </h1>
+      </div>
+     
       <h5 class="mb-5">you can create a new post here</h5>
 
       <form action="/post" method="post">
